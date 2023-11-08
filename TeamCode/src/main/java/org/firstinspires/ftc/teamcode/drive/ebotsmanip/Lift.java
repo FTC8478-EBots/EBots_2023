@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.drive.ebotsmanip;
 import android.os.Handler;
+
+import static org.firstinspires.ftc.teamcode.drive.CenterStageConstants.bluePixelX;
+import static org.firstinspires.ftc.teamcode.drive.CenterStageConstants.bluePixelY;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.ARMMOTORHANGINGPOSITION;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.ARMMOTORPREPAREHANGINGPOSITION;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.BASEMOTORHANGINGPOSITION;
@@ -12,15 +15,18 @@ import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.upp
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.upperArmTicksToDegrees;
 
 import static java.lang.Math.cos;
+import static java.lang.Math.decrementExact;
 import static java.lang.Math.sqrt;
 import static java.lang.Thread.sleep;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants;
 
 import java.lang.Math;
@@ -28,11 +34,14 @@ import java.lang.Math;
 public class Lift {
     DcMotorEx baseMotor;
     DcMotorEx armMotor;
-
+    int pixelLock = 0;
     Servo wristServo;
-
+    Telemetry telemetry;
     Servo handServo;
-    public Lift(DcMotorEx baseMotor, DcMotorEx armMotor,Servo wristServo, Servo handServo) {
+    boolean wristStability = true;
+    double wristFieldCentricAngle = 0;
+    public Lift(DcMotorEx baseMotor, DcMotorEx armMotor,Servo wristServo, Servo handServo/*Telemetry telemetry*/) {
+        //this.telemetry = telemetry;
         this.baseMotor = baseMotor;
         this.armMotor = armMotor;
         this.wristServo = wristServo;
@@ -46,13 +55,31 @@ public class Lift {
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setMotorEnable();
     }
+        public void init(){
+        baseMotor.setVelocity(.2);
+        baseMotor.setPower(-.2);
+    }
      public void setBaseMotorVelocity(double velocity){
         //baseMotor.setPower(-velocity);
      }
-    public double moveLowerArmToAngle() {
-        return 0;
+    public double moveLowerArmToAngle(double angle) {
+        baseMotor.setTargetPosition((int) (angle * lowerArmTicksToDegrees));
+        baseMotor.setPower(.5);
+        return baseMotor.getCurrentPosition()/lowerArmTicksToDegrees;
     }
-
+    public void dispense1Pixel() {
+        if (pixelLock < 2) {pixelLock += 1;}
+        handServo.setPosition(pixelLock/2);
+    }
+    public void loadPixels() {
+        pixelLock = 2;
+        handServo.setPosition(1);
+    }
+    //lock into position 0, dispense adds 1, load puts to 2
+    public void lockPixels() {
+        pixelLock = 0;
+        handServo.setPosition(0.5);
+    }
     public double getLowerArmAngleDegrees() {
         return baseMotor.getCurrentPosition()/lowerArmTicksToDegrees;
     }
@@ -63,8 +90,10 @@ public class Lift {
        return new Pose2d(lowerArmLengthInches * Math.cos(Math.toRadians(getLowerArmAngleDegrees())),
         lowerArmLengthInches * Math.sin(Math.toRadians(getLowerArmAngleDegrees())));
     }
-    public double moveUpperArmToAngle() {
-        return baseMotor.getCurrentPosition()/upperArmTicksToDegrees;
+    public double moveUpperArmToAngle(double angle) {
+        armMotor.setTargetPosition((int) (angle * upperArmTicksToDegrees));
+        armMotor.setPower(.5);
+        return armMotor.getCurrentPosition()/upperArmTicksToDegrees;
     }
     public void setArmMotorVelocity(double velocity){
         //armMotor.setPower(velocity);
@@ -120,7 +149,9 @@ public class Lift {
         return null;
 
     }
+    public void initArm() {
 
+    }
     public Pose2d getArmPosition() {
         //return lift.getPosition();
         return null;
@@ -155,12 +186,73 @@ public class Lift {
         baseMotor.setPower(.6);
         armMotor.setPower(.6);
     }
-    public void setArmPos(int rowfunc) {
+    public void pixelSetArmPos(int rowfunc) {
         baseMotor.setTargetPosition(pixelRowsLower[rowfunc]);
         armMotor.setTargetPosition(pixelRowsUpper[rowfunc]);
     }
-    public static void prepareColumn(int col) {
-
+    public void stowArm() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                moveLowerArmToAngle(90.0);
+                moveUpperArmToAngle(30.0);
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                }
+                moveUpperArmToAngle(0.0);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                }
+                moveLowerArmToAngle(15.0);
+            }
+        };
+        new Thread(runnable).start();
     }
-}
+    public void pullArm() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                wristEnableStability(true);
+                moveLowerArmToAngle(15.0);
+                moveUpperArmToAngle(0.0);
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                }
+                moveUpperArmToAngle(30.0);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                }
+                moveLowerArmToAngle(90.0);
+            }
+        };
+        new Thread(runnable).start();
+    }
+
+    public void setWristAngle(double a) {
+        wristFieldCentricAngle = a/180;
+        wristServo.setPosition(a / 180);
+    }
+    public void wristEnableStability(boolean value) {
+        wristStability = value;
+    }
+
+    public void stabilizeWrist() {
+        if (wristStability) {
+            setWristAngle(getLowerArmAngleDegrees()+getUpperArmAngleDegrees());
+            //telemetry.addData("Wrist angle setting to", getLowerArmAngleDegrees()+getUpperArmAngleDegrees());
+        }
+    }
+    /*public void prepareColumn (int col) {
+        if (!(drive.getPoseEstimate().getX() == bluePixelX & drive.getPoseEstimate().getY() == bluePixelY[column - 1])) {
+            Trajectory move = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    .lineToLinearHeading(new Pose2d(bluePixelX, bluePixelY[column - 1], Math.toRadians(0)))
+                    .build();
+            drive.followTrajectory(move);
+        }
+    }*/
+    }
 
