@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Camera;
+import org.firstinspires.ftc.teamcode.drive.ebotsmanip.DataStorage;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Intake;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Lift;
 
@@ -27,13 +28,18 @@ public class TeleopTest2 extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setPoseEstimate(DataStorage.currentPose);
         Intake intake = new Intake(hardwareMap);
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         Camera camera = new Camera(hardwareMap, telemetry);
         camera.init();
         camera.enable();
-        drive.pixelArm.init();
+        Lift pixelArm = new Lift(hardwareMap, telemetry);
+        if (!DataStorage.alreadyInitialized) {
+            pixelArm.init(this);
+        }
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DataStorage.alreadyInitialized = true;
         waitForStart();
         boolean flagup = false;
         boolean flagdown = false;
@@ -63,7 +69,7 @@ public class TeleopTest2 extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
-            drive.pixelArm.stabilizeWrist();
+            pixelArm.stabilizeWrist();
             telemetry.addData("Joystick 1 leftX", gamepad1.left_stick_x);
             if (gamepad2.circle) {
                 //Grabber.close
@@ -73,17 +79,17 @@ public class TeleopTest2 extends LinearOpMode {
                 //Grabber.open
                 telemetry.addData("opening pixel grabber, 2square", "");
             }
-            if (gamepad2.triangle) {
+            if (gamepad1.triangle) {
                 //Airplanelauncher.launch
                 telemetry.addData("launching airplane, 2triangle", "");
             }
-            if (gamepad1.x) {
+            if (gamepad2.cross) {
                 telemetry.addLine("stowArm");
-                drive.pixelArm.stowArm();
+                pixelArm.stowArm();
             }
-            if (gamepad1.triangle) {
+            if (gamepad2.triangle) {
                 telemetry.addLine("PullArm");
-                drive.pixelArm.pullArm();
+                pixelArm.pullArm();
             }
             if (gamepad2.dpad_up) {
                 if (!flagup) {
@@ -137,30 +143,17 @@ public class TeleopTest2 extends LinearOpMode {
             if (!gamepad2.dpad_left) {
                 flagleft = false;
             }
-            telemetry.addData("column",column);
-            telemetry.addData("row",row);
-            if (gamepad2.x) {
-                if (!pixelFlag) {
-                    if (pixelMode) {
-                        pixelFlag = true;
-                        pixelMode = false;
-                    } else {
-                        pixelFlag = true;
-                        pixelMode = true;
-                    }
-                }
-            }
-            if (!gamepad2.x) {
-                pixelFlag = false;
-            }
+            telemetry.addData("column", column);
+            telemetry.addData("row", row);
+
             if (gamepad1.dpad_up) {
                 telemetry.addData("Prepare to Hang arm, 1up", "");
-                drive.pixelArm.prepareToHang();
+                pixelArm.prepareToHang();
                 //PixelArm.lower
             }
             if (gamepad1.dpad_down) {
                 telemetry.addData("hang, 1down", "");
-                drive.pixelArm.hang();
+                pixelArm.hang();
                 //PixelArm.lower
             }
 
@@ -185,11 +178,11 @@ public class TeleopTest2 extends LinearOpMode {
             }*/
 
             if (gamepad2.left_bumper) {
-                drive.pixelArm.pixelSetArmPos(row);
+                //pixelArm.pixelSetArmPos(row);
                 //TeleopTest2.prepareColumn(column);
                 telemetry.addData("Preparing row", row);
-                double[] angles = drive.pixelArm.getAngleSettingsDegrees(row,48-drive.getPoseEstimate().getX(), CenterStageRobotConstants.baseDistanceOffGround);
-                telemetry.addData("Go to base position",angles[0]);
+                double[] angles = pixelArm.getAngleSettingsDegrees(row, 48 - drive.getPoseEstimate().getX(), CenterStageRobotConstants.baseDistanceOffGround);
+                telemetry.addData("Go to base position", angles[0]);
                 telemetry.addData("Go to arm position", angles[1]);
                 telemetry.addData("Preparing column", column);
                 //ask camera for position
@@ -201,20 +194,23 @@ public class TeleopTest2 extends LinearOpMode {
                             .build();
                     drive.followTrajectory(move);*/
 
-                }
             }
-        if (Math.abs(gamepad2.left_stick_y)>.1) {
-            //
-            drive.pixelArm.setBaseMotorVelocity(gamepad2.left_stick_y);
-            drive.pixelArm.setArmMotorVelocity(gamepad2.left_stick_y);
-            telemetry.addData("triangle is pressed on 1","");
-        }
-        if (Math.abs(gamepad2.left_stick_x)>.1) {
-            //
-            drive.pixelArm.setBaseMotorVelocity(gamepad2.left_stick_x);
-            drive.pixelArm.setArmMotorVelocity(gamepad2.left_stick_x);
-            telemetry.addData("triangle is pressed on 1","");
-        }
+
+            if (Math.abs(gamepad2.left_stick_y) > .1 || Math.abs(gamepad2.left_stick_x) > .1) {
+                //
+                pixelArm.setManualControl();
+                pixelArm.setBaseMotorVelocity(gamepad2.left_stick_y/2-gamepad2.left_stick_x);
+                pixelArm.setArmMotorVelocity(gamepad2.left_stick_y+gamepad2.left_stick_x);
+                telemetry.addData("triangle is pressed on 1", "");
+            } else {
+                pixelArm.setPositionControl();
+            }
+           /* if (Math.abs(gamepad2.left_stick_x) > .1) {
+                //
+                drive.pixelArm.setBaseMotorVelocity(gamepad2.left_stick_x);
+                drive.pixelArm.setArmMotorVelocity(gamepad2.left_stick_x);
+                telemetry.addData("triangle is pressed on 1", "");
+            }
             /*if (gamepad1.triangle) {
                 //
                 drive.pixelArm.setBaseMotorVelocity(.3);
@@ -231,14 +227,14 @@ public class TeleopTest2 extends LinearOpMode {
                 drive.pixelArm.setBaseMotorVelocity(0.0);
                 drive.pixelArm.setArmMotorVelocity(0.0);
             }*/
-            if (gamepad1.left_bumper & gamepad1.right_bumper& gamepad1.left_trigger > 0.5 & gamepad1.right_trigger > 0.5) {
+            if (gamepad1.left_bumper & gamepad1.right_bumper & gamepad1.left_trigger > 0.5 & gamepad1.right_trigger > 0.5) {
                 telemetry.addData("Reset location", "oo");
             }
-            telemetry.addData("Base angle", drive.pixelArm.getLowerArmAngleDegrees());
-            telemetry.addData("Arm angle", drive.pixelArm.getUpperArmAngleDegrees());
-            telemetry.addData("Upper arm XY", drive.pixelArm.getUpperArmXY());
-            double[] angles = drive.pixelArm.getAngleSettingsDegrees(row,48-drive.getPoseEstimate().getX(), CenterStageRobotConstants.baseDistanceOffGround);
-            telemetry.addData("Go to base position",angles[0]);
+            telemetry.addData("Base angle", pixelArm.getLowerArmAngleDegrees());
+            telemetry.addData("Arm angle", pixelArm.getUpperArmAngleDegrees());
+            telemetry.addData("Upper arm XY", pixelArm.getUpperArmXY());
+            double[] angles = pixelArm.getAngleSettingsDegrees(row, 48 - drive.getPoseEstimate().getX(), CenterStageRobotConstants.baseDistanceOffGround);
+            telemetry.addData("Go to base position", angles[0]);
             telemetry.addData("Go to arm position", angles[1]);
             /*if gamepad2.Circle pressed:
             Close grabber
@@ -253,11 +249,12 @@ public class TeleopTest2 extends LinearOpMode {
             */
             drive.update();
 
-            Pose2d poseEstimate = drive.getPoseEstimate();
+            poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
-            telemetry.addData("arm position", drive.pixelArm.getArmPosition());
+            telemetry.addData("arm position", pixelArm.getArmPosition());
             telemetry.update();
         }
     }
+}

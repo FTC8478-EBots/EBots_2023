@@ -88,7 +88,6 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private List<Integer> lastEncPositions = new ArrayList<>();
     private List<Integer> lastEncVels = new ArrayList<>();
-public Lift pixelArm ;
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
@@ -114,22 +113,13 @@ public Lift pixelArm ;
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-        baseMotor = hardwareMap.get(DcMotorEx.class, "baseMotor");
-        armMotor = hardwareMap.get(DcMotorEx.class, "armMotor");
-        wristServo = hardwareMap.get(Servo.class, "wristServo");
-        handServo = hardwareMap.get(Servo.class,"handServo");
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        baseMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        baseMotor.setMotorEnable();
-        baseMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armMotor.setMotorEnable();
+
         //lift = hardwareMap.get(DcMotorEx.class, "lift");
         //lift.setDirection(DcMotorSimple.Direction.REVERSE);
-        pixelArm=new Lift(baseMotor, armMotor, wristServo, handServo);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (DcMotorEx motor : motors) {

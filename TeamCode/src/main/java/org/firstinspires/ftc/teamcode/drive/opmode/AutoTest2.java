@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.ebotsmanip.DataStorage;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -50,10 +51,10 @@ public class AutoTest2 extends LinearOpMode {
         drive.followTrajectory(traj1);
         telemetry.addLine("picking up pixel");
         telemetry.update();
-        drive.pixelArm.setHeight(6);
 
 
         sleep(1000);
+        DataStorage.currentPose = drive.getPoseEstimate();
         //telemetry.addData("robot has gone back","yes");
         //drive.followTrajectory(traj3);
         //sleep(2000);

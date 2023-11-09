@@ -123,7 +123,6 @@ public Lift pixelArm ;
         armMotor.setMotorEnable();
         //lift = hardwareMap.get(DcMotorEx.class, "lift");
         //lift.setDirection(DcMotorSimple.Direction.REVERSE);
-        pixelArm=new Lift(baseMotor, armMotor, wristServo, handServo);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (DcMotorEx motor : motors) {
