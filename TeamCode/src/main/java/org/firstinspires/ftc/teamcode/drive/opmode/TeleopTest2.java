@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Camera;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.DataStorage;
+import org.firstinspires.ftc.teamcode.drive.ebotsmanip.DroneLauncher;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Intake;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Lift;
 
@@ -34,13 +35,15 @@ public class TeleopTest2 extends LinearOpMode {
         Camera camera = new Camera(hardwareMap, telemetry);
         camera.init();
         camera.enable();
+        DroneLauncher droneLauncher = new DroneLauncher(hardwareMap);
         Lift pixelArm = new Lift(hardwareMap, telemetry);
         if (!DataStorage.alreadyInitialized) {
             pixelArm.init(this);
         }
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        DataStorage.alreadyInitialized = true;
+        //DataStorage.alreadyInitialized = true;
         waitForStart();
+        intake.powerServos(true);
         boolean flagup = false;
         boolean flagdown = false;
         boolean flagright = false;
@@ -80,7 +83,7 @@ public class TeleopTest2 extends LinearOpMode {
                 telemetry.addData("opening pixel grabber, 2square", "");
             }
             if (gamepad1.triangle) {
-                //Airplanelauncher.launch
+                droneLauncher.launchDrone();
                 telemetry.addData("launching airplane, 2triangle", "");
             }
             if (gamepad2.cross) {
@@ -181,30 +184,42 @@ public class TeleopTest2 extends LinearOpMode {
                 //pixelArm.pixelSetArmPos(row);
                 //TeleopTest2.prepareColumn(column);
                 telemetry.addData("Preparing row", row);
-                double[] angles = pixelArm.getAngleSettingsDegrees(row, 48 - drive.getPoseEstimate().getX(), CenterStageRobotConstants.baseDistanceOffGround);
-                telemetry.addData("Go to base position", angles[0]);
-                telemetry.addData("Go to arm position", angles[1]);
+                //double[] angles = pixelArm.getAngleSettingsDegrees(row, 48 - drive.getPoseEstimate().getX(), CenterStageRobotConstants.baseDistanceOffGround);
+                //telemetry.addData("Go to base position", angles[0]);
+                //telemetry.addData("Go to arm position", angles[1]);
                 telemetry.addData("Preparing column", column);
                 //ask camera for position
-                drive.setPoseEstimate(camera.getCurrentPosition());
-                telemetry.addData("Preparing column", drive.getPoseEstimate());
-                /*if (!(drive.getPoseEstimate().getX() == bluePixelX & drive.getPoseEstimate().getY() == bluePixelY[column-1])) {
-                    Trajectory move = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(new Pose2d(bluePixelX, bluePixelY[column-1], Math.toRadians(0)))
-                            .build();
-                    drive.followTrajectory(move);*/
+                Pose2d distanceToTarget = camera.getDistanceToColumnOne();
+                if (distanceToTarget != null) {
+                    telemetry.addData("Preparing column", drive.getPoseEstimate());
+                    telemetry.addData("Estimated Distance: ", distanceToTarget.getY());
+                    telemetry.addData("Estimated Offset: ", distanceToTarget.getX());
+                    telemetry.addData("Estimated skew", distanceToTarget.getHeading());
 
+
+                    if (!(drive.getPoseEstimate().getX() == bluePixelX & drive.getPoseEstimate().getY() == bluePixelY[column - 1])) {
+                        //Trajectory move = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        //        .lineToLinearHeading(new Pose2d(bluePixelX, bluePixelY[column - 1], Math.toRadians(0)))
+                        //        .build();
+                        //drive.followTrajectory(move);
+                    }
+                } else {
+                    telemetry.addLine("Target not found!!");
+                }
             }
 
-            if (Math.abs(gamepad2.left_stick_y) > .1 || Math.abs(gamepad2.left_stick_x) > .1) {
-                //
-                pixelArm.setManualControl();
-                pixelArm.setBaseMotorVelocity(gamepad2.left_stick_y/2-gamepad2.left_stick_x);
-                pixelArm.setArmMotorVelocity(gamepad2.left_stick_y+gamepad2.left_stick_x);
-                telemetry.addData("triangle is pressed on 1", "");
-            } else {
-                pixelArm.setPositionControl();
-            }
+                if (Math.abs(gamepad2.left_stick_y) > .1 || Math.abs(gamepad2.left_stick_x) > .1) {
+                    //
+                    pixelArm.setManualControl();
+                    pixelArm.setBaseMotorVelocity(gamepad2.left_stick_y / 2 - gamepad2.left_stick_x);
+                    pixelArm.setArmMotorVelocity(gamepad2.left_stick_y + gamepad2.left_stick_x);
+                    telemetry.addData("triangle is pressed on 1", "");
+                } else {
+                    pixelArm.setPositionControl();
+                }
+                if (gamepad1.cross) {
+                    droneLauncher.resetDrone();
+                }
            /* if (Math.abs(gamepad2.left_stick_x) > .1) {
                 //
                 drive.pixelArm.setBaseMotorVelocity(gamepad2.left_stick_x);
@@ -227,15 +242,17 @@ public class TeleopTest2 extends LinearOpMode {
                 drive.pixelArm.setBaseMotorVelocity(0.0);
                 drive.pixelArm.setArmMotorVelocity(0.0);
             }*/
-            if (gamepad1.left_bumper & gamepad1.right_bumper & gamepad1.left_trigger > 0.5 & gamepad1.right_trigger > 0.5) {
-                telemetry.addData("Reset location", "oo");
-            }
-            telemetry.addData("Base angle", pixelArm.getLowerArmAngleDegrees());
-            telemetry.addData("Arm angle", pixelArm.getUpperArmAngleDegrees());
-            telemetry.addData("Upper arm XY", pixelArm.getUpperArmXY());
-            double[] angles = pixelArm.getAngleSettingsDegrees(row, 48 - drive.getPoseEstimate().getX(), CenterStageRobotConstants.baseDistanceOffGround);
-            telemetry.addData("Go to base position", angles[0]);
-            telemetry.addData("Go to arm position", angles[1]);
+                if (gamepad1.left_bumper & gamepad1.right_bumper & gamepad1.left_trigger > 0.5 & gamepad1.right_trigger > 0.5) {
+                    telemetry.addData("Reset location", "oo");
+                    Pose2d currentPosition = drive.getPoseEstimate();
+                    drive.setPoseEstimate(new Pose2d(currentPosition.getX(),currentPosition.getY(),0));
+                }
+                telemetry.addData("Base angle", pixelArm.getLowerArmAngleDegrees());
+                telemetry.addData("Arm angle", pixelArm.getUpperArmAngleDegrees());
+                telemetry.addData("Upper arm XY", pixelArm.getUpperArmXY());
+                double[] angles = pixelArm.getAngleSettingsDegrees(row, 48 - drive.getPoseEstimate().getX(), CenterStageRobotConstants.baseDistanceOffGround);
+                telemetry.addData("Go to base position", angles[0]);
+                telemetry.addData("Go to arm position", angles[1]);
             /*if gamepad2.Circle pressed:
             Close grabber
             if gamepad2.Square pressed:
@@ -247,14 +264,14 @@ public class TeleopTest2 extends LinearOpMode {
                     new Pose2d(-gamepad2.left_stick_y, -gamepad2.left_stick_x, -gamepad2.right_stick_x)
             );
             */
-            drive.update();
+                drive.update();
 
-            poseEstimate = drive.getPoseEstimate();
-            telemetry.addData("x", poseEstimate.getX());
-            telemetry.addData("y", poseEstimate.getY());
-            telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
-            telemetry.addData("arm position", pixelArm.getArmPosition());
-            telemetry.update();
+                poseEstimate = drive.getPoseEstimate();
+                telemetry.addData("x", poseEstimate.getX());
+                telemetry.addData("y", poseEstimate.getY());
+                telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
+                telemetry.addData("arm position", pixelArm.getArmPosition());
+                telemetry.update();
+            }
         }
     }
-}

@@ -16,6 +16,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -56,8 +57,14 @@ public class Camera {
     public void enable() {
 
     }
-    public Pose2d getCurrentPosition() {
-        return new Pose2d(48, 40);
+    public Pose2d getDistanceToColumnOne() {
+        List<AprilTagDetection> detections = aprilTag.getDetections();
+        for(AprilTagDetection detection : detections) {
+            telemetry.addLine("TAG Found: " + detection.metadata.id);
+            Pose2d returnValue = new Pose2d(detection.ftcPose.range*Math.sin(detection.ftcPose.bearing),detection.ftcPose.range*Math.cos(detection.ftcPose.bearing),detection.ftcPose.yaw);
+            return returnValue;
+        }
+        return null;
     }
     /* Copyright (c) 2023 FIRST. All rights reserved.
      *
@@ -205,6 +212,7 @@ public class Camera {
         private void initAprilTag() {
             // Create the AprilTag processor by using a builder.
             aprilTag = new AprilTagProcessor.Builder().build();
+            aprilTag.setDecimation(1);
 
             // Create the vision portal by using a builder.
             if (USE_WEBCAM) {
@@ -219,7 +227,9 @@ public class Camera {
                         .build();
             }
         }
-
+        public int getSpikePosition() {
+            return 2;
+        }
         /*
          Manually set the camera gain and exposure.
          This can only be called AFTER calling initAprilTag(), and only works for Webcams;

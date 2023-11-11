@@ -50,7 +50,7 @@ public class Lift {
     public static double wristFieldCentricAngle = 0;
     double wristFieldCentricAngleFactor = 62.0/90.0;
     public static double wristFactor = 0.9;
-    public static double wristZeroPosition = .35; //.75 real, .35 tuning.
+    public static double wristZeroPosition = .18; //.75 real, .35 tuning.
     double baseMotorTarget = 0;
     double armMotorTarget = 0;
     final int targetTolerance = 80;
@@ -130,12 +130,12 @@ public class Lift {
         }
     }
      public void setBaseMotorVelocity(double velocity){
+        if (stowed) return;
         baseMotor.setPower(-velocity);
-        //baseMotor.setVelocity(velocity*128.0);
      }
     public void setArmMotorVelocity(double velocity){
+        if (stowed) return;
         armMotor.setPower(-velocity);
-        //armMotor.setVelocity(velocity*128.0);
     }
     public double moveLowerArmToAngle(double angle) {
         baseMotor.setTargetPosition((int) (angle * lowerArmTicksToDegrees));
@@ -289,20 +289,9 @@ public class Lift {
                 moveArmToAngle(-50,50);
                 setwristFieldCentricAngle(0);
          //       moveArmToAngle(-50,30);
-       //         moveArmToAngle(-45,10);
+                moveArmToAngle(-15,10);
 
-                /*
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                }
-                moveUpperArmToAngle(0.0);
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                }
-                moveLowerArmToAngle(15.0);
-                */
+
                 stowed = true;
             }
         };
@@ -313,29 +302,17 @@ public class Lift {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                lockPixels();
                 wristEnableStability(true);
                 moveArmToAngle(-45,10);
                 moveArmToAngle(-50,30);
                 setwristFieldCentricAngle(60);
                 moveArmToAngle(-50,50);
 
-
-
-                /*moveUpperArmToAngle(30.0);
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                }
-                moveLowerArmToAngle(90.0);
-
-                 */
                 stowed = false;
             }
         };
         new Thread(runnable).start();
-    }
-    public boolean getStowed() {
-        return stowed;
     }
     public void setwristFieldCentricAngle(double a) {
         wristFieldCentricAngle = a;
