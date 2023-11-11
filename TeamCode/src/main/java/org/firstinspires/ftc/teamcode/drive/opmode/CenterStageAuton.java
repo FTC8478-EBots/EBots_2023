@@ -29,7 +29,7 @@ public class CenterStageAuton extends LinearOpMode {
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         config = new AutonConfig(telemetry, gamepad1);
         Camera camera = new Camera(hardwareMap, telemetry);
-        while (!config.processUpdates() && !opModeIsActive()) ;
+        while (!config.processUpdates() && !opModeIsActive() &&!isStopRequested()) ;
 
 
         List<Trajectory> trajectories = config.generateAutonTrajectories(drive, camera.getSpikePosition());
@@ -39,6 +39,7 @@ public class CenterStageAuton extends LinearOpMode {
         telemetry.update();
         telemetry.addLine("picking up pixel");
         telemetry.update();
+        //camera.getSpikePosition();
         for (Trajectory traj : trajectories) {
             drive.followTrajectory(traj);
         }

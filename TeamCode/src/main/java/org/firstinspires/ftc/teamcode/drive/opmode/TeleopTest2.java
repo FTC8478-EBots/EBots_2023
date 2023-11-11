@@ -74,12 +74,9 @@ public class TeleopTest2 extends LinearOpMode {
             );
             pixelArm.stabilizeWrist();
             telemetry.addData("Joystick 1 leftX", gamepad1.left_stick_x);
-            if (gamepad2.circle) {
-                //Grabber.close
-                telemetry.addData("closing pixel grabber, 2circle", "");
-            }
+
             if (gamepad2.square) {
-                //Grabber.open
+                pixelArm.loadPixels();
                 telemetry.addData("opening pixel grabber, 2square", "");
             }
             if (gamepad1.triangle) {
@@ -213,9 +210,14 @@ public class TeleopTest2 extends LinearOpMode {
                     pixelArm.setManualControl();
                     pixelArm.setBaseMotorVelocity(gamepad2.left_stick_y / 2 - gamepad2.left_stick_x);
                     pixelArm.setArmMotorVelocity(gamepad2.left_stick_y + gamepad2.left_stick_x);
-                    telemetry.addData("triangle is pressed on 1", "");
+                    //pixelArm.setBaseMotorVelocity(Math.cos(pixelArm.getLowerArmAngle()));
+
+                    telemetry.addData("manual override", "");
                 } else {
                     pixelArm.setPositionControl();
+                }
+                if (Math.abs(gamepad2.right_stick_y) > .1 && Math.abs(gamepad2.right_stick_x) > .1) {
+                    pixelArm.setwristFieldCentricAngle(Math.atan(gamepad2.right_stick_x/gamepad2.right_stick_y));
                 }
                 if (gamepad1.cross) {
                     droneLauncher.resetDrone();
