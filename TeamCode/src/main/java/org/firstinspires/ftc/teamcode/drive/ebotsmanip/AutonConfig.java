@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.ebotsmanip;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -8,17 +9,19 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.CenterStageConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.opencv.photo.MergeRobertson;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Vector;
+@Config
 public class AutonConfig {
     Telemetry telemetry;
     Gamepad gamepad;
 
-    public int teamColor = 0; //0 == RED
-    public int startingPosition = 1; //0 == backstage by the boards
-    public int startingDelay = 0;
+    public static int teamColor = 0; //0 == RED
+    public static int startingPosition = 1; //0 == backstage by the boards
+    public static int startingDelay = 0;
     private boolean previousLeftBumper = false;
     private boolean previousRightBumper = false;
     private boolean previousUp = false;
@@ -50,6 +53,7 @@ public class AutonConfig {
                 startingDelay += 1;
             }
         }
+
         previousUp = gamepad.dpad_up;
         if (gamepad.dpad_down && !previousDown) {
             if (1 <= startingDelay && startingDelay <= 10) {
@@ -72,10 +76,75 @@ public class AutonConfig {
 
     }
     //returns a list of trajectories to be executed in order.
-    public List<Trajectory> generateAutonTrajectories(SampleMecanumDrive drive, int spikePosition) {
+    public List<Trajectory> generateAutonTrajectories(SampleMecanumDrive drive,Intake intake, Lift pixelArm) {
         List<Trajectory> returnValue = new ArrayList<>();
-        //Place a pixel
+
+
         Pose2d startPose  = null;
+        Trajectory startToPark = null;
+        Trajectory startAwayFromTheWall = null;
+        if (teamColor == 0 && startingPosition == 0) {
+            startPose = CenterStageConstants.startPoseRedBackStage;
+            startAwayFromTheWall = drive.trajectoryBuilder(startPose)
+                    //.splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .forward(4)
+                    .build();
+            startToPark = drive.trajectoryBuilder(startAwayFromTheWall.end())
+                    //.splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .strafeRight(48)
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
+
+
+        }
+        if (teamColor == 0 && startingPosition == 1) {
+            startPose = CenterStageConstants.startPoseRedFrontStage;
+            startAwayFromTheWall = drive.trajectoryBuilder(startPose)
+                    //.splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .forward(4)
+                    .build();
+            startToPark = drive.trajectoryBuilder(startAwayFromTheWall.end())
+                    .strafeRight(96)
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
+        }
+        if (teamColor == 1 && startingPosition == 0) {
+            startPose = CenterStageConstants.startPoseBlueBackStage;
+            startAwayFromTheWall = drive.trajectoryBuilder(startPose)
+                    //.splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .forward(4)
+                    .build();
+            startToPark = drive.trajectoryBuilder(startAwayFromTheWall.end())
+                    //.splineTo(new Vector2d(-36, -42),Math.toRadians(270))
+                    .strafeLeft(48)
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
+        }
+        if (teamColor == 1 && startingPosition == 1) {
+            startPose = CenterStageConstants.startPoseBlueFrontStage;
+            startAwayFromTheWall = drive.trajectoryBuilder(startPose)
+                    //.splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .forward(4)
+                    .build();
+            startToPark = drive.trajectoryBuilder(startAwayFromTheWall.end())
+                    .strafeLeft(96)
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
+        }
+        drive.setPoseEstimate(startPose);
+        returnValue.add(startAwayFromTheWall);
+        returnValue.add(startToPark);
+
+
+
+        return returnValue;
+
+
+
+
+
+        //Place a pixel
+        /*Pose2d startPose  = null;
         if (teamColor == 0 && startingPosition == 0) {
             startPose = CenterStageConstants.startPoseRedBackStage;
         }
@@ -94,14 +163,28 @@ public class AutonConfig {
         Trajectory pixelToBackdrop = null;
         Trajectory backdropToParking = null;
         Trajectory turnAfterSpike = null;
+       Trajectory park = null;
 
         if (teamColor == 0 && startingPosition == 0) {
-            throw new RuntimeException("Forgot Something");
+            //Red Backstage
+            startToPixel = drive.trajectoryBuilder(startPose)
+                    .splineTo(new Vector2d(-36,-66),Math.toRadians(90))
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
+            //pixelToBackdrop =
+            backdropToParking = drive.trajectoryBuilder(startToPixel.end())
+                    .splineTo(new Vector2d(-36,-35),Math.toRadians(90))
+                    .splineTo(new Vector2d(-36,-36),Math.toRadians(90))
+                            .build();
+            returnValue.add(startToPixel);
+            //returnValue.add(pixelToBackdrop);
+            returnValue.add(backdropToParking);
          }
         if (teamColor == 0 && startingPosition == 1) {
             //red frontstage
             startToPixel = drive.trajectoryBuilder(startPose)
                     .splineTo(new Vector2d(-36, -42),Math.toRadians(90))
+                    .addDisplacementMarker(()->intake.ejectPixel())
                     .build();
             turnAfterSpike = drive.trajectoryBuilder(startToPixel.end())
                     .lineToLinearHeading(new Pose2d(-42,-42,Math.toRadians(0)))
@@ -112,31 +195,80 @@ public class AutonConfig {
                     //.splineTo(new Vector2d())
                     .build();
             backdropToParking = drive.trajectoryBuilder(pixelToBackdrop.end())
-                    .splineTo(new Vector2d(-48, -42),Math.toRadians(0))
+                    .splineTo(new Vector2d(48, -56),Math.toRadians(0))
+                    .splineTo(new Vector2d(56, -56),Math.toRadians(0))
+
                     //.splineTo(new Vector2d(36,-12),Math.toRadians(0))
                     //.splineTo(new Vector2d())
                     .build();
+            returnValue.add(startToPixel);
+            returnValue.add(turnAfterSpike);
+            returnValue.add(pixelToBackdrop);
+            returnValue.add(backdropToParking);
         }
         if (teamColor == 1 && startingPosition == 0) {
-            throw new RuntimeException("Forgot Something");
+            //Backstage Blue
+            startToPixel = drive.trajectoryBuilder(startPose)
+                    .splineTo(new Vector2d(36, 42),Math.toRadians(90))
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
+            turnAfterSpike = drive.trajectoryBuilder(startToPixel.end())
+                    .lineToLinearHeading(new Pose2d(42,42,Math.toRadians(0)))
+                    .build();
+            pixelToBackdrop = drive.trajectoryBuilder(turnAfterSpike.end())
+                    .lineToLinearHeading(new Pose2d(48, 42,Math.toRadians(0)))
+                    .build();
+            backdropToParking = drive.trajectoryBuilder(pixelToBackdrop.end())
+                    .splineTo(new Vector2d(36,12),Math.toRadians(90))
+                    .splineTo(new Vector2d(60,12),Math.toRadians(90))
+                    .build();
+            returnValue.add(startToPixel);
+            returnValue.add(turnAfterSpike);
+            returnValue.add(pixelToBackdrop);
+            returnValue.add(backdropToParking);
+
+            park = drive.trajectoryBuilder(startPose)
+                    .strafeLeft(48)
+                    .build();
 
         }
         if (teamColor == 1 && startingPosition == 1) {
-            throw new RuntimeException("Forgot Something");
-
-        }
+            //Frontstage Blue
+            startToPixel = drive.trajectoryBuilder(startPose)
+                    .splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
+            turnAfterSpike = drive.trajectoryBuilder(startToPixel.end())
+                    .lineToLinearHeading(new Pose2d(42,42,Math.toRadians(0)))
+                    .build();
+            pixelToBackdrop = drive.trajectoryBuilder(turnAfterSpike.end())
+                    .lineToLinearHeading(new Pose2d(48, 42,Math.toRadians(0)))
+                    //.splineTo(new Vector2d(36,-12),Math.toRadians(0))
+                    //.splineTo(new Vector2d())
+                    .build();
+            backdropToParking = drive.trajectoryBuilder(pixelToBackdrop.end())
+                    .splineTo(new Vector2d(36,12),Math.toRadians(0))
+                    .splineTo(new Vector2d(54,12),Math.toRadians(90))
+                    .build();
+            returnValue.add(park);
+            /*returnValue.add(startToPixel);
+            returnValue.add(turnAfterSpike);
+            returnValue.add(pixelToBackdrop);
+            returnValue.add(backdropToParking);*/
+      //  }
         //startToPixel add magical drop pixel Code here:
-        returnValue.add(startToPixel);
-        returnValue.add(turnAfterSpike);
-        returnValue.add(pixelToBackdrop);
-        returnValue.add(backdropToParking);
+
+
 
 
         //go to boards
         //go to start
         //go to boards;
-        return returnValue;
+        //return returnValue;
     }
+
+
+
 
 
 

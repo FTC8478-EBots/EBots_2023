@@ -288,7 +288,10 @@ public class Lift {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                stowPixels();
+                moveArmToAngle(-5,5,.7,.7);
+
+
+                /*              stowPixels();
                 moveArmToAngle(-72,72,baseSpeed,armSpeed);
                 setwristFieldCentricAngle(0);
                 try {
@@ -321,7 +324,7 @@ public class Lift {
                 {}
                 moveArmToAngle(-10,8,.3,.3);
                 loadPixels();
-
+*/
 
 
                 stowed = true;
@@ -334,7 +337,8 @@ public class Lift {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                stowPixels();
+                moveArmToAngle(-47,97,.4,.4);
+                /*stowPixels();
                 setwristFieldCentricAngle(0);
                 moveArmToAngle(-45,13,.3,.1);
                 try {
@@ -349,7 +353,7 @@ public class Lift {
                 lockPixels();
                 moveArmToAngle(-72,72,baseSpeed,armSpeed);
                 setwristFieldCentricAngle(60);
-
+*/
 
                 //moveArmToAngle(-50,30);
                 //setwristFieldCentricAngle(60);

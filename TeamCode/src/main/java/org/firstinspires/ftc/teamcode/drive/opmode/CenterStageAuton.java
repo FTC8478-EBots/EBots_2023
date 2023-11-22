@@ -11,8 +11,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig;
+import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig1121;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Camera;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.DataStorage;
+import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Intake;
+import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Lift;
+import org.firstinspires.ftc.teamcode.drive.ebotsmanip.TeamElementDetector;
 
 import java.util.List;
 
@@ -21,24 +25,36 @@ import java.util.List;
  */
 @Autonomous(group = "drive")
 public class CenterStageAuton extends LinearOpMode {
-    AutonConfig config;
+    AutonConfig1121 config;
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        //drive.pixelArm.init(telemetry);
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-        config = new AutonConfig(telemetry, gamepad1);
-        Camera camera = new Camera(hardwareMap, telemetry);
+        Lift pixelArm = new Lift(hardwareMap,telemetry);
+        Intake intake = new Intake(hardwareMap);
+        pixelArm.init(this);
+
+        DataStorage.alreadyInitialized = true;
+
+        config = new AutonConfig1121(telemetry, gamepad1);
+        //Camera camera = new Camera(hardwareMap, telemetry);
         while (!config.processUpdates() && !opModeIsActive() &&!isStopRequested()) ;
+        TeamElementDetector detector = new TeamElementDetector(hardwareMap, telemetry);
+        detector.init();
+        while (!isStopRequested() && !opModeIsActive()) {
+            int position = detector.detect();
+            telemetry.addData("Team element position", position);
+            telemetry.update();
+        }
 
-
-        List<Trajectory> trajectories = config.generateAutonTrajectories(drive, camera.getSpikePosition());
-        waitForStart();
+        List<Trajectory> trajectories = config.generateAutonTrajectories(drive,intake,pixelArm);
+  //      waitForStart();
         if (isStopRequested()) return;
-        telemetry.addLine("robot is ready to start moving");
+        /*telemetry.addLine("robot is ready to start moving");
         telemetry.update();
         telemetry.addLine("picking up pixel");
-        telemetry.update();
+        telemetry.update();*/
+
         //camera.getSpikePosition();
         for (Trajectory traj : trajectories) {
             drive.followTrajectory(traj);

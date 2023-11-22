@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
  * and op modes themselves.
  */
 @Config
-public class DriveConstants {
+public class DriveConstantsRevEncoder {
 
     /*
      * These are motor constants that should be listed online for your motors.
@@ -48,7 +48,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.88976; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 11.15; // in
+    public static double TRACK_WIDTH = 11.3; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -56,9 +56,9 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.01722;//0.01757;//0.021;
-    public static double kA = 0.00013;//0.0011;//0.0028;
-    public static double kStatic = 0.09268;//0.06858;//0.02;
+    public static double kV = 0.01757;//0.021;
+    public static double kA = 0.0011;//0.0028;
+    public static double kStatic = 0.06858;//0.02;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -90,10 +90,10 @@ public class DriveConstants {
      */
     //public static double MAX_VEL = 52.48180821614297;
     //public static double MAX_ACCEL = 40;
-    public static double MAX_VEL = 30;//44.84;
-    public static double MAX_ACCEL = 30;//28;
-    public static double MAX_ANG_VEL = 2.8;//Math.toRadians(244.02104812767092);
-    public static double MAX_ANG_ACCEL = 3.14;//Math.toRadians(184.02607784577722);
+    public static double MAX_VEL = 44.84;
+    public static double MAX_ACCEL = 28;
+    public static double MAX_ANG_VEL = Math.toRadians(244.02104812767092);
+    public static double MAX_ANG_ACCEL = Math.toRadians(184.02607784577722);
 
     public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR =
             RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;

@@ -163,14 +163,15 @@ public class TeleopTest2 extends LinearOpMode {
                 telemetry.addData("hanging, 1circle","");
             }*/
             if (gamepad1.square) {
-                intakeOn = true;
+                intake.powerServos(true);
+
                 telemetry.addData("Intake on", "square1");
-            }
-            if (gamepad1.circle) {
-                intakeOn = false;
+            } else if (gamepad1.circle) {
+                intake.ejectPixel();
                 telemetry.addData("Intake off", "circle1");
+            } else {
+                intake.powerServos(false);
             }
-            intake.powerServos(intakeOn);
             /*if (pixelMode) {
                 if (gamepad2.left_bumper) {
                     drive.pixelArm.setArmPos(row);
