@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig;
-import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig1121;
+import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig1127;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Camera;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.DataStorage;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Intake;
@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Autonomous(group = "drive")
 public class CenterStageAuton extends LinearOpMode {
-    AutonConfig1121 config;
+    AutonConfig1127 config;
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -36,7 +36,7 @@ public class CenterStageAuton extends LinearOpMode {
 
         DataStorage.alreadyInitialized = true;
 
-        config = new AutonConfig1121(telemetry, gamepad1);
+        config = new AutonConfig1127(telemetry, gamepad1);
         //Camera camera = new Camera(hardwareMap, telemetry);
         while (!config.processUpdates() && !opModeIsActive() &&!isStopRequested()) ;
         TeamElementDetector detector = new TeamElementDetector(hardwareMap, telemetry);

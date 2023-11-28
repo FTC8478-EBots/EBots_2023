@@ -9,12 +9,14 @@ import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.ARM
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.ARMMOTORPREPAREHANGINGPOSITION;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.BASEMOTORHANGINGPOSITION;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.BASEMOTORPREPAREHANGINGPOSITION;
+import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.backboardAngle;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.lowerArmLengthInches;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.lowerArmTicksToDegrees;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.pixelRowsLower;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.pixelRowsUpper;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.upperArmLengthInches;
 import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.upperArmTicksToDegrees;
+import static org.firstinspires.ftc.teamcode.drive.CenterStageRobotConstants.wristFCAngleStart;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.decrementExact;
@@ -80,6 +82,7 @@ public class Lift {
     }
         public void init(LinearOpMode linearOpMode){
         //baseMotor.setVelocity(.2);
+            setwristFieldCentricAngle(wristFCAngleStart);
             baseMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -109,10 +112,11 @@ public class Lift {
 
             armMotor.setTargetPosition(armMotor.getCurrentPosition());
             armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            baseMotor.setTargetPosition(baseMotor.getCurrentPosition());
+            baseMotor.setTargetPosition(-10);
             baseMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             baseMotor.setPower(.3);
             armMotor.setPower(.3);
+            linearOpMode.sleep(3000);
 
 
 
@@ -246,17 +250,22 @@ public class Lift {
     }
 
     public void prepareToHang() {
-        baseMotor.setTargetPosition((int) Math.round(BASEMOTORPREPAREHANGINGPOSITION));
-        armMotor.setTargetPosition((int) Math.round(ARMMOTORPREPAREHANGINGPOSITION));
-        baseMotor.setPower(.5);
-        armMotor.setPower(.5);
+
+        moveArmToAngle(-47,97,.4,.4);
+
+//        baseMotor.setTargetPosition((int) Math.round(BASEMOTORPREPAREHANGINGPOSITION));
+//        armMotor.setTargetPosition((int) Math.round(ARMMOTORPREPAREHANGINGPOSITION));
+//        baseMotor.setPower(.5);
+//        armMotor.setPower(.5);
 
     }
     public void hang() {
-        baseMotor.setTargetPosition(BASEMOTORHANGINGPOSITION);
-        armMotor.setTargetPosition(ARMMOTORHANGINGPOSITION);
-        baseMotor.setPower(.6);
-        armMotor.setPower(.6);
+        moveArmToAngle(-5,5,.7,.7);
+
+//        baseMotor.setTargetPosition(BASEMOTORHANGINGPOSITION);
+//        armMotor.setTargetPosition(ARMMOTORHANGINGPOSITION);
+//        baseMotor.setPower(.6);
+//        armMotor.setPower(.6);
     }
     public void pixelSetArmPos(int rowfunc) {
         baseMotor.setTargetPosition(pixelRowsLower[rowfunc]);
@@ -283,15 +292,16 @@ public class Lift {
         }
     }
 
+
     public void stowArm() {
         if (stowed) return;
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                moveArmToAngle(-5,5,.7,.7);
 
 
-                /*              stowPixels();
+
+                stowPixels();
                 moveArmToAngle(-72,72,baseSpeed,armSpeed);
                 setwristFieldCentricAngle(0);
                 try {
@@ -304,27 +314,27 @@ public class Lift {
                 } catch (Exception e)
                 {}
 
-                moveArmToAngle(-78,13,baseSpeed,armSpeed);
-                setwristFieldCentricAngle(-10);
+                moveArmToAngle(-45,13,baseSpeed,armSpeed);
+                setwristFieldCentricAngle(wristFCAngleStart);
 
                 try {
                     Thread.sleep(200);
                 } catch (Exception e)
                 {}
 
-                moveArmToAngle(-45,0,.3,.2);
+                moveArmToAngle(-25,8,.3,.2);
                 try {
                     Thread.sleep(200);
                 } catch (Exception e)
                 {}
-                moveArmToAngle(-10  ,0,.3,.1);
+                moveArmToAngle(-10  ,5,.3,.1);
                 try {
                     Thread.sleep(200);
                 } catch (Exception e)
                 {}
-                moveArmToAngle(-10,8,.3,.3);
+                moveArmToAngle(-10,0,.3,.3);
                 loadPixels();
-*/
+
 
 
                 stowed = true;
@@ -337,26 +347,31 @@ public class Lift {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                moveArmToAngle(-47,97,.4,.4);
-                /*stowPixels();
+                stowPixels();
                 setwristFieldCentricAngle(0);
                 moveArmToAngle(-45,13,.3,.1);
                 try {
                     Thread.sleep(200);
                 } catch (Exception e)
                 {}
-                moveArmToAngle(-78,39,baseSpeed,armSpeed);
+                moveArmToAngle(-60,26,baseSpeed,armSpeed);
+                try {
+                    Thread.sleep(200);
+                } catch (Exception e)
+                {}
+
+                moveArmToAngle(-78,48,baseSpeed,armSpeed);
                 try {
                     Thread.sleep(200);
                 } catch (Exception e)
                 {}
                 lockPixels();
                 moveArmToAngle(-72,72,baseSpeed,armSpeed);
-                setwristFieldCentricAngle(60);
-*/
+                setwristFieldCentricAngle(backboardAngle);
+
 
                 //moveArmToAngle(-50,30);
-                //setwristFieldCentricAngle(60);
+                //setwristFieldCentricAngle(backboardAngle);
                 //moveArmToAngle(-50,50);
 
                 stowed = false;

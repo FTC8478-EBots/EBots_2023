@@ -44,6 +44,7 @@ public class TeleopTest2 extends LinearOpMode {
         //DataStorage.alreadyInitialized = true;
         waitForStart();
         intake.powerServos(true);
+        pixelArm.moveLowerArmToAngle(-10,.3);
         boolean flagup = false;
         boolean flagdown = false;
         boolean flagright = false;
@@ -177,7 +178,6 @@ public class TeleopTest2 extends LinearOpMode {
                     drive.pixelArm.setArmPos(row);
                 }
             }*/
-
             if (gamepad2.left_bumper) {
                 //pixelArm.pixelSetArmPos(row);
                 //TeleopTest2.prepareColumn(column);
@@ -206,7 +206,7 @@ public class TeleopTest2 extends LinearOpMode {
                 }
             }
 
-                if (Math.abs(gamepad2.left_stick_y) > .1 || Math.abs(gamepad2.left_stick_x) > .1) {
+                if (/*Math.abs(gamepad2.left_stick_y) > .1 || Math.abs(gamepad2.left_stick_x) > .1*/false) {
                     //
                     pixelArm.setManualControl();
                     pixelArm.setBaseMotorVelocity(gamepad2.left_stick_y / 2 - gamepad2.left_stick_x);
@@ -217,9 +217,9 @@ public class TeleopTest2 extends LinearOpMode {
                 } else {
                     pixelArm.setPositionControl();
                 }
-                if (Math.abs(gamepad2.right_stick_y) > .1 && Math.abs(gamepad2.right_stick_x) > .1) {
+                /*if (Math.abs(gamepad2.right_stick_y) > .1 && Math.abs(gamepad2.right_stick_x) > .1) {
                     pixelArm.setwristFieldCentricAngle(Math.atan(gamepad2.right_stick_x/gamepad2.right_stick_y));
-                }
+                }*/
                 if (gamepad1.cross) {
                     droneLauncher.resetDrone();
                 }

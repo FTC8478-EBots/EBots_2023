@@ -16,6 +16,10 @@ public class CenterStageRobotConstants {
     public static final int upperArmLengthInches = 14;
 
     public static final int lowerArmAngleOffset = 15;
+    public static final double backboardAngle = 66;
+
+    public static final double wristFCAngleStart =-4;
+    public static final double wristFCAngleStow = 0;
 
     public static final int upperArmAngleOffset = 0;
 
