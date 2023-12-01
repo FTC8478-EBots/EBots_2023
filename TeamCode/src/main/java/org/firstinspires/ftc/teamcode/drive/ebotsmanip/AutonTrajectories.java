@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.ebotsmanip;
 
-import static org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig.startingPosition;
+import static org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfigBackup.startingPosition;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -88,22 +88,58 @@ public class AutonTrajectories {
 
     }
     //returns a list of trajectories to be executed in order.
-    public List<Trajectory> generateAutonTrajectories(SampleMecanumDrive drive,Intake intake, Lift pixelArm) {
+    public List<Trajectory> getAutonTrajectories(SampleMecanumDrive drive,Intake intake, Lift pixelArm, CameraRedBlue.TEAM_ELEMENT_POSITION elementPosition) {
         List<Trajectory> returnValue = new ArrayList<>();
         final int cMult = red ? 1 : -1;
 
         Pose2d startPose = new Pose2d(-36, cMult*(-66), cMult*Math.toRadians(90));
+        //left
         Trajectory startToSpikeL = drive.trajectoryBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-36, cMult*(-35 + Math.abs(elementPos - 2) * 7), cMult*Math.toRadians(270 - elementPos * 90)))
+                .lineToLinearHeading(new Pose2d(-36, cMult*(-35 + Math.abs(1 - 2) * 7), cMult*Math.toRadians(270 - 1 * 90)))
                 .lineToLinearHeading(new Pose2d(-36, cMult*(-58),cMult*Math.toRadians(0)))
-                //.addDisplacementMarker(()->intake.ejectPixel())
+                .addDisplacementMarker(()->intake.ejectPixel())
                 .build();
         Trajectory spikeToPixelL = drive.trajectoryBuilder(startToSpikeL.end())
                 .lineToLinearHeading(new Pose2d(47, cMult*(-58), Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(47, cMult*(-24 - elementPos * 6), Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(48, cMult*(-24 - elementPos * 6), Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(47, cMult*(-24 - 1 * 6), Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(48, cMult*(-24 - 1 * 6), Math.toRadians(0)))
+                //.addDisplacementMarker(()->pixelArm.placePixelRow1)
+
                 .build();
         Trajectory pixelToParkL = drive.trajectoryBuilder(spikeToPixelL.end())
+                .lineToLinearHeading(new Pose2d(48, cMult*(-56)/* + parkingPos * 24*/, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(56, cMult*(-56)/*+parkingPos * 24*/, Math.toRadians(0)))
+                .build();
+        //center
+        Trajectory startToSpikeC = drive.trajectoryBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(-36, cMult*(-35 + Math.abs(2 - 2) * 7), cMult*Math.toRadians(270 - 2 * 90)))
+                .lineToLinearHeading(new Pose2d(-36, cMult*(-58),cMult*Math.toRadians(0)))
+                .addDisplacementMarker(()->intake.ejectPixel())
+                .build();
+        Trajectory spikeToPixelC = drive.trajectoryBuilder(startToSpikeC.end())
+                .lineToLinearHeading(new Pose2d(47, cMult*(-58), Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(47, cMult*(-24 - 2 * 6), Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(48, cMult*(-24 - 2 * 6), Math.toRadians(0)))
+                //.addDisplacementMarker(()->pixelArm.placePixelRow1)
+                .build();
+        Trajectory pixelToParkC = drive.trajectoryBuilder(spikeToPixelC.end())
+                .lineToLinearHeading(new Pose2d(48, cMult*(-56)/* + parkingPos * 24*/, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(56, cMult*(-56)/*+parkingPos * 24*/, Math.toRadians(0)))
+                .build();
+        //right
+        Trajectory startToSpikeR = drive.trajectoryBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(-36, cMult*(-35 + Math.abs(3 - 2) * 7), cMult*Math.toRadians(270 - 3 * 90)))
+                .lineToLinearHeading(new Pose2d(-36, cMult*(-58),cMult*Math.toRadians(0)))
+                .addDisplacementMarker(()->intake.ejectPixel())
+                .build();
+        Trajectory spikeToPixelR = drive.trajectoryBuilder(startToSpikeR.end())
+                .lineToLinearHeading(new Pose2d(47, cMult*(-58), Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(47, cMult*(-24 - 3 * 6), Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(48, cMult*(-24 - 3 * 6), Math.toRadians(0)))
+                //.addDisplacementMarker(()->pixelArm.placePixelRow1)
+
+                .build();
+        Trajectory pixelToParkR = drive.trajectoryBuilder(spikeToPixelR.end())
                 .lineToLinearHeading(new Pose2d(48, cMult*(-56)/* + parkingPos * 24*/, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(56, cMult*(-56)/*+parkingPos * 24*/, Math.toRadians(0)))
                 .build();
@@ -122,9 +158,21 @@ public class AutonTrajectories {
                 //backdropToParking
 
         drive.setPoseEstimate(startPose);
-        returnValue.add(startToSpikeL);
-        returnValue.add(spikeToPixelL);
-        returnValue.add(pixelToParkL);
+        if (elementPosition == CameraRedBlue.TEAM_ELEMENT_POSITION.LeftSpike) {
+            returnValue.add(startToSpikeL);
+            returnValue.add(spikeToPixelL);
+            returnValue.add(pixelToParkL);
+        }
+        if (elementPosition == CameraRedBlue.TEAM_ELEMENT_POSITION.MiddleSpike) {
+            returnValue.add(startToSpikeC);
+            returnValue.add(spikeToPixelC);
+            returnValue.add(pixelToParkC);
+        }
+        if (elementPosition == CameraRedBlue.TEAM_ELEMENT_POSITION.RightSpike) {
+            returnValue.add(startToSpikeR);
+            returnValue.add(spikeToPixelR);
+            returnValue.add(pixelToParkR);
+        }
         return returnValue;
     }
 }

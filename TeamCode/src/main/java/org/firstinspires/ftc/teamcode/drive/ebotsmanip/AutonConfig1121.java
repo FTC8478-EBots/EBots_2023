@@ -1,21 +1,17 @@
 package org.firstinspires.ftc.teamcode.drive.ebotsmanip;
 
-import static org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig.startingPosition;
+import static org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfigBackup.startingPosition;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.drive.CenterStageConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.opencv.photo.MergeRobertson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 @Config
 public class AutonConfig1121 {

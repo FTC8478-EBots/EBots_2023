@@ -18,7 +18,7 @@ public class CenterStageRobotConstants {
     public static final int lowerArmAngleOffset = 15;
     public static final double backboardAngle = 66;
 
-    public static final double wristFCAngleStart =-4;
+    public static final double wristFCAngleStart =-10;
     public static final double wristFCAngleStow = 0;
 
     public static final int upperArmAngleOffset = 0;
@@ -33,8 +33,9 @@ public class CenterStageRobotConstants {
 
     public static final int ARMMOTORHANGINGPOSITION = 000;
 
-    public static final int[] pixelRowsLower = {100,200,300,400,500,600,700,800,900,1000,1100};
-    public static final int[] pixelRowsUpper = {200,400,600,800,1000,1200,1400,1600,1800,2000,2200};
+    public static final int[] pixelRowsLower = {-66,-71,-76,-81,-86,-91,-96,-101,-106,-111,-116,};//{100,200,300,400,500,600,700,800,900,1000,1100};
+    public static final int[] pixelRowsUpper = {75,80,85,90,95,100,105,110,115,120,125};//{200,400,600,800,1000,1200,1400,1600,1800,2000,2200};
+
 
 
     public static final double[] rowHeightsIn = {7.25, 9.5, 11.75, 14, 16.25, 18.5, 20.75, 23, 25.25, 27.5, 29.75};

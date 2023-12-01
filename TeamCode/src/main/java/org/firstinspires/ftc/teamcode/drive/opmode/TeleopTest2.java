@@ -43,12 +43,15 @@ public class TeleopTest2 extends LinearOpMode {
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //DataStorage.alreadyInitialized = true;
         waitForStart();
-        intake.powerServos(true);
+        //intake.powerServos(true);
         pixelArm.moveLowerArmToAngle(-10,.3);
         boolean flagup = false;
         boolean flagdown = false;
         boolean flagright = false;
         boolean flagleft = false;
+        boolean g2triangleFlag = false;
+        boolean g2squareFlag = false;
+
         int column = 1;
         int row = 1;
         boolean pixelMode = false;
@@ -86,16 +89,30 @@ public class TeleopTest2 extends LinearOpMode {
             }
             if (gamepad2.cross) {
                 telemetry.addLine("stowArm");
-                pixelArm.stowArm();
+                if(!g2squareFlag) {
+                    pixelArm.stowArm();
+                    g2squareFlag = true;
+                }
+
+            } else {
+                g2squareFlag = false;
             }
             if (gamepad2.triangle) {
                 telemetry.addLine("PullArm");
-                pixelArm.pullArm();
+                if(!g2triangleFlag) {
+                    pixelArm.pullArm(row);
+                    g2triangleFlag = true;
+                }
+            } else {
+                g2triangleFlag = false;
             }
             if (gamepad2.dpad_up) {
                 if (!flagup) {
                     if (1 <= (row + 1) & (row + 1) <= 11) {
                         row += 1;
+                        pixelArm.setRow(row);
+
+
                     }
                 }
                 flagup = true;
@@ -109,6 +126,7 @@ public class TeleopTest2 extends LinearOpMode {
                 if (!flagdown) {
                     if (1 <= row - 1 & row - 1 <= 11) {
                         row -= 1;
+                        pixelArm.setRow(row);
                     }
                 }
                 flagdown = true;
@@ -163,6 +181,7 @@ public class TeleopTest2 extends LinearOpMode {
                 //HangArm.hang
                 telemetry.addData("hanging, 1circle","");
             }*/
+
             if (gamepad1.square) {
                 intake.powerServos(true);
 
@@ -170,7 +189,7 @@ public class TeleopTest2 extends LinearOpMode {
             } else if (gamepad1.circle) {
                 intake.ejectPixel();
                 telemetry.addData("Intake off", "circle1");
-            } else {
+            } else if (gamepad1.cross){
                 intake.powerServos(false);
             }
             /*if (pixelMode) {
@@ -277,4 +296,7 @@ public class TeleopTest2 extends LinearOpMode {
                 telemetry.update();
             }
         }
-    }
+
+
+
+}

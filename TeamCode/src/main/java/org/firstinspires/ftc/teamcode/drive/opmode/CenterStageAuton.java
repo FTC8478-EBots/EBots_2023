@@ -2,17 +2,13 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig1127;
-import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Camera;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.DataStorage;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Intake;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Lift;

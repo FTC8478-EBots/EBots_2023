@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.ebotsmanip;
 
-import static org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig.startingPosition;
+import static org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfigBackup.startingPosition;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;

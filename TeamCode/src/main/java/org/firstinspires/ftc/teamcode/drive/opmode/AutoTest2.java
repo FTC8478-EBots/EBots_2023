@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig;
+import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfigBackup;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.DataStorage;
 
 /*
@@ -21,13 +21,13 @@ import org.firstinspires.ftc.teamcode.drive.ebotsmanip.DataStorage;
 @Disabled
 
 public class AutoTest2 extends LinearOpMode {
-    AutonConfig config;
+    AutonConfigBackup config;
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         //drive.pixelArm.init(telemetry);
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-        config = new AutonConfig(telemetry, gamepad1);
+        config = new AutonConfigBackup(telemetry, gamepad1);
         while (!config.processUpdates()) ;
 
         Pose2d startPose = new Pose2d(-36, -66, Math.toRadians(90));

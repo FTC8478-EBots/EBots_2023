@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive.ebotsmanip;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -15,10 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Config
-public class AutonConfig {
+public class AutonConfigBackup {
     Telemetry telemetry;
     Gamepad gamepad;
-    AutonTrajectories autonTrajectories;
     public CameraRedBlue.TEAM_START_POSITION teamStartPosition = null;
     public Pose2d startPose = null;
     public static int teamColor = 0; //0 == RED
@@ -28,12 +25,20 @@ public class AutonConfig {
     private boolean previousRightBumper = false;
     private boolean previousUp = false;
     private boolean previousDown = false;
-    public AutonConfig(Telemetry telemetry, Gamepad gamepad) {
+    private boolean configComplete = false;
+    public AutonConfigBackup(Telemetry telemetry, Gamepad gamepad) {
         this.telemetry = telemetry;
         this.gamepad = gamepad;
 
     }
     public boolean processUpdates() {
+        if(configComplete) {
+            telemetry.addLine("Ready To Run.");
+            telemetry.addData("Team Color", teamColor == 0 ? "RED":"BLUE");
+            telemetry.addData("Team Position", startingPosition == 0 ? "Backstage":"Frontstage");
+            telemetry.addData("Starting Delay",startingDelay);
+            return configComplete;
+        }
         telemetry.addLine("Left Bumper to change team.");
         telemetry.addLine("Right Bumper to change position.");
         telemetry.addLine("Up/Down to change delay.");
@@ -63,16 +68,11 @@ public class AutonConfig {
             }
         }
         previousDown = gamepad.dpad_down;
-        telemetry.update();
         if (gamepad.circle)
         {
-            telemetry.addLine("Ready To Run.");
-            telemetry.addData("Team Color", teamColor == 0 ? "RED":"BLUE");
-            telemetry.addData("Team Position", startingPosition == 0 ? "Backstage":"Frontstage");
-            telemetry.addData("Starting Delay",startingDelay);
-            telemetry.update();
 
-            return true;
+            configComplete = true;
+
         }
         if(teamColor == 0) {
             if (startingPosition == 0) {
@@ -87,7 +87,7 @@ public class AutonConfig {
                 teamStartPosition = CameraRedBlue.TEAM_START_POSITION.BlueRight;
             }
         }
-        return false;
+        return configComplete;
 
     }
 
@@ -101,28 +101,56 @@ public class AutonConfig {
         Trajectory startAwayFromTheWall = null;
         if (teamColor == 0 && startingPosition == 0) {
             startPose = CenterStageConstants.startPoseRedBackStage;
+            startAwayFromTheWall = drive.trajectoryBuilder(startPose)
+                    //.splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .forward(4)
+                    .build();
+            startToPark = drive.trajectoryBuilder(startAwayFromTheWall.end())
+                    //.splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .strafeRight(48)
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
 
 
         }
         if (teamColor == 0 && startingPosition == 1) {
             startPose = CenterStageConstants.startPoseRedFrontStage;
-
+            startAwayFromTheWall = drive.trajectoryBuilder(startPose)
+                    //.splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .forward(4)
+                    .build();
+            startToPark = drive.trajectoryBuilder(startAwayFromTheWall.end())
+                    .strafeRight(96)
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
         }
         if (teamColor == 1 && startingPosition == 0) {
             startPose = CenterStageConstants.startPoseBlueBackStage;
-
+            startAwayFromTheWall = drive.trajectoryBuilder(startPose)
+                    //.splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .forward(4)
+                    .build();
+            startToPark = drive.trajectoryBuilder(startAwayFromTheWall.end())
+                    //.splineTo(new Vector2d(-36, -42),Math.toRadians(270))
+                    .strafeLeft(48)
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
         }
         if (teamColor == 1 && startingPosition == 1) {
             startPose = CenterStageConstants.startPoseBlueFrontStage;
-
+            startAwayFromTheWall = drive.trajectoryBuilder(startPose)
+                    //.splineTo(new Vector2d(-36, 42),Math.toRadians(90))
+                    .forward(4)
+                    .build();
+            startToPark = drive.trajectoryBuilder(startAwayFromTheWall.end())
+                    .strafeLeft(96)
+                    .addDisplacementMarker(()->intake.ejectPixel())
+                    .build();
         }
         drive.setPoseEstimate(startPose);
-        //returnValue.add(startAwayFromTheWall);
-        //returnValue.add(startToPark);
-        autonTrajectories = new AutonTrajectories(telemetry,gamepad1);
-        /*TODO for (Trajectory traj : autonTrajectories.getAutonTrajectories(drive, intake, pixelArm)) {
-            returnValue.add(traj);
-        }*/
+        returnValue.add(startAwayFromTheWall);
+        returnValue.add(startToPark);
+
 
 
         return returnValue;
