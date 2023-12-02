@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.drive.ebotsmanip;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
+import static org.firstinspires.ftc.teamcode.drive.ebotsmanip.CameraRedBlue.TEAM_START_POSITION.BlueLeft;
+import static org.firstinspires.ftc.teamcode.drive.ebotsmanip.CameraRedBlue.TEAM_START_POSITION.BlueRight;
+import static org.firstinspires.ftc.teamcode.drive.ebotsmanip.CameraRedBlue.TEAM_START_POSITION.RedLeft;
+import static org.firstinspires.ftc.teamcode.drive.ebotsmanip.CameraRedBlue.TEAM_START_POSITION.RedRight;
 import static org.firstinspires.ftc.teamcode.drive.opmode.CenterStageAutonFlint.teamElementPosition;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -79,11 +83,11 @@ public class AutonConfig {
             if (startingPosition == 0) {
                 teamStartPosition = CameraRedBlue.TEAM_START_POSITION.RedLeft;
             } else {
-                teamStartPosition = CameraRedBlue.TEAM_START_POSITION.RedRight;
+                teamStartPosition = RedRight;
             }
         } else {
             if (startingPosition == 0) {
-                teamStartPosition = CameraRedBlue.TEAM_START_POSITION.BlueLeft;
+                teamStartPosition = BlueLeft;
             } else {
                 teamStartPosition = CameraRedBlue.TEAM_START_POSITION.BlueRight;
             }
@@ -95,6 +99,7 @@ public class AutonConfig {
     //returns a list of trajectories to be executed in order.
     public List<Trajectory> generateAutonTrajectories(SampleMecanumDrive drive,Intake intake, Lift pixelArm) {
         List<Trajectory> returnValue = new ArrayList<>();
+        CameraRedBlue.TEAM_START_POSITION startPosition = null;
 
 
         //Pose2d startPose  = null;
@@ -102,26 +107,26 @@ public class AutonConfig {
         Trajectory startAwayFromTheWall = null;
         if (teamColor == 0 && startingPosition == 0) {
             startPose = CenterStageConstants.startPoseRedBackStage;
-
+            startPosition = RedLeft;
 
         }
         if (teamColor == 0 && startingPosition == 1) {
             startPose = CenterStageConstants.startPoseRedFrontStage;
-
+            startPosition = RedRight;
         }
         if (teamColor == 1 && startingPosition == 0) {
             startPose = CenterStageConstants.startPoseBlueBackStage;
-
+            startPosition = BlueRight;
         }
         if (teamColor == 1 && startingPosition == 1) {
             startPose = CenterStageConstants.startPoseBlueFrontStage;
-
+            startPosition = BlueLeft;
         }
         drive.setPoseEstimate(startPose);
         //returnValue.add(startAwayFromTheWall);
         //returnValue.add(startToPark);
         autonTrajectories = new AutonTrajectories(telemetry,gamepad1);
-        for (Trajectory traj : autonTrajectories.getAutonTrajectories(drive, intake, pixelArm, teamElementPosition)) {
+        for (Trajectory traj : autonTrajectories.getAutonTrajectories(drive, intake, pixelArm, startPosition, teamElementPosition)) {
             returnValue.add(traj);
         }
 

@@ -23,6 +23,7 @@ public class CenterStageConstants {
     public static final Pose2d SpikeRRedFront = new Pose2d(-42, -24, 0);
 
     //public static final Pose2d BlueTagLeft = new Pose2d()
+    public static final double DistanceBetweenQrCodes = 6.0;
 
     public static final int bluePixelX = 48;
 

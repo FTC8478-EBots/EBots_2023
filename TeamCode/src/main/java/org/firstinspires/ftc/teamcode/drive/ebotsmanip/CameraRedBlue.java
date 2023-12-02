@@ -70,7 +70,10 @@ public class CameraRedBlue {
         static final Scalar BLUE = new Scalar(0, 0, 255);
         static final Scalar GREEN = new Scalar(0, 255, 0);
 
-       // TODO: Use this section to move the 3 regions of interest top left corners to where the team
+        static Scalar TEAM_COLOR = new Scalar(0, 0, 255);
+
+
+        // TODO: Use this section to move the 3 regions of interest top left corners to where the team
         //elements are from your cameras’ perspective. The boxes are currently set at 20 x 20 pixels
         //which you can adjust below. Ideally the region of interest position should see the gray mat when
         //there is no element or the element color when the element is there.
@@ -79,6 +82,7 @@ public class CameraRedBlue {
         static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(230,98);
         static final int REGION_WIDTH = 20;
         static final int REGION_HEIGHT = 20;
+
         Point region1_pointA = new Point(
                 REGION1_TOPLEFT_ANCHOR_POINT.x,
                 REGION1_TOPLEFT_ANCHOR_POINT.y);
@@ -112,18 +116,22 @@ public class CameraRedBlue {
                 Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
             switch (startPosition) {
                 case RedLeft:
+                    TEAM_COLOR = new Scalar (255,0,0);
                     Core.extractChannel(YCrCb, Cb, 1) //Look for strongest Red
                     ;
                     break;
                 case RedRight:
+                    TEAM_COLOR = new Scalar (255,0,0);
                     Core.extractChannel(YCrCb, Cb, 1) //Look for strongest Red
                     ;
                     break;
                 case BlueLeft:
+                    TEAM_COLOR = new Scalar (0,0,255);
                     Core.extractChannel(YCrCb, Cb, 2) //Look for strongest Blue
                     ;
                     break;
                 case BlueRight:
+                    TEAM_COLOR = new Scalar (0,0,255);
                     Core.extractChannel(YCrCb, Cb, 2) //Look for strongest Blue
                     ;
                     break;
@@ -152,19 +160,19 @@ public class CameraRedBlue {
                     input, //Buffer to draw on
                     region1_pointA,
                     region1_pointB,
-                    BLUE,
+                    TEAM_COLOR,
                     2);
             Imgproc.rectangle(
                     input, //Buffer to draw on
                     region2_pointA,
                     region2_pointB,
-                    BLUE,
+                    TEAM_COLOR,
                     2);
             Imgproc.rectangle(
                     input, //Buffer to draw on
                     region3_pointA,
                     region3_pointB,
-                    BLUE,
+                    TEAM_COLOR,
                     2);
 //Find the max of the 3 areas
           /*  This final section finds the maximum of the 3, then sees which of the 3 the maximum is and
