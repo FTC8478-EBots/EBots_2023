@@ -51,6 +51,7 @@ public class TeleopTest2 extends LinearOpMode {
         boolean flagleft = false;
         boolean g2triangleFlag = false;
         boolean g2squareFlag = false;
+        double driveSpeed = 1.0;
 
         int column = 1;
         int row = 1;
@@ -59,12 +60,16 @@ public class TeleopTest2 extends LinearOpMode {
         boolean intakeOn = false;
         while (!isStopRequested()) {
             Pose2d poseEstimate = drive.getPoseEstimate();
-
+            if(gamepad1.left_bumper) {
+                driveSpeed = .3;
+            } else {
+                driveSpeed = 1;
+            }
 // Create a vector from the gamepad x/y inputs
 // Then, rotate that vector by the inverse of that heading
             Vector2d input = new Vector2d(
-                    -gamepad1.left_stick_y,
-                    -gamepad1.left_stick_x
+                    -gamepad1.left_stick_y*driveSpeed,
+                    -gamepad1.left_stick_x*driveSpeed
             ).rotated(-poseEstimate.getHeading());
 
 // Pass in the rotated input + right stick value for rotation
@@ -73,7 +78,7 @@ public class TeleopTest2 extends LinearOpMode {
                     new Pose2d(
                             input.getX(),
                             input.getY(),
-                            -gamepad1.right_stick_x
+                            -gamepad1.right_stick_x*driveSpeed
                     )
             );
             pixelArm.stabilizeWrist();
@@ -264,6 +269,7 @@ public class TeleopTest2 extends LinearOpMode {
                 drive.pixelArm.setBaseMotorVelocity(0.0);
                 drive.pixelArm.setArmMotorVelocity(0.0);
             }*/
+
                 if (gamepad1.left_bumper & gamepad1.right_bumper & gamepad1.left_trigger > 0.5 & gamepad1.right_trigger > 0.5) {
                     telemetry.addData("Reset location", "oo");
                     Pose2d currentPosition = drive.getPoseEstimate();
@@ -271,7 +277,9 @@ public class TeleopTest2 extends LinearOpMode {
                 }
                 telemetry.addData("Base angle", pixelArm.getLowerArmAngleDegrees());
                 telemetry.addData("Arm angle", pixelArm.getUpperArmAngleDegrees());
-                telemetry.addData("Upper arm XY", pixelArm.getUpperArmXY());
+                telemetry.addData("Wrist angle", pixelArm.getWristAngleDegrees());
+
+            telemetry.addData("Upper arm XY", pixelArm.getUpperArmXY());
                 double[] angles = pixelArm.getAngleSettingsDegrees(row, 48 - drive.getPoseEstimate().getX(), CenterStageRobotConstants.baseDistanceOffGround);
                 telemetry.addData("Go to base position", angles[0]);
                 telemetry.addData("Go to arm position", angles[1]);

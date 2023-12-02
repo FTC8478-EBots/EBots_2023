@@ -33,8 +33,8 @@ public class CenterStageRobotConstants {
 
     public static final int ARMMOTORHANGINGPOSITION = 000;
 
-    public static final int[] pixelRowsLower = {-66,-71,-76,-81,-86,-91,-96,-101,-106,-111,-116,};//{100,200,300,400,500,600,700,800,900,1000,1100};
-    public static final int[] pixelRowsUpper = {75,80,85,90,95,100,105,110,115,120,125};//{200,400,600,800,1000,1200,1400,1600,1800,2000,2200};
+    public static final int[] pixelRowsLower = {-55,-61,-66,-71,-76,-81,-86,-91,-96,-101,-106,-111};//{100,200,300,400,500,600,700,800,900,1000,1100};
+    public static final int[] pixelRowsUpper = {75,85,95,105,115,125,135,135,135,135,135,135};//{200,400,600,800,1000,1200,1400,1600,1800,2000,2200};
 
 
 

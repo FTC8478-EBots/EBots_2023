@@ -8,13 +8,13 @@ public class DroneLauncher {
 
     public DroneLauncher(HardwareMap hardwareMap) {
         droneServo  = hardwareMap.get(Servo.class,"droneServo");
-        droneServo.setPosition(0.4);
+        droneServo.setPosition(0);
     }
 
     public void launchDrone() {
-        droneServo.setPosition(0);
+        droneServo.setPosition(1);
     }
     public void resetDrone() {
-        droneServo.setPosition(0.4);
+        droneServo.setPosition(0);
     }
 }

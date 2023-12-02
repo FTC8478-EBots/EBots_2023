@@ -258,7 +258,12 @@ public class Lift {
     public double getUpperArmAngleDegrees() {
         return armMotor.getCurrentPosition()/upperArmTicksToDegrees;
     }
-    public double getUpperArmPosition() {
+    public double getWristAngleDegrees() {
+        return armMotor.getCurrentPosition();
+
+    }
+
+        public double getUpperArmPosition() {
         return armMotor.getCurrentPosition();
     }
     public Pose2d getUpperArmXY() {
@@ -432,7 +437,9 @@ public class Lift {
 
 
                 //moveArmToAngle(-50,30);
-                //setwristFieldCentricAngle(backboardAngle);
+                setwristFieldCentricAngle(backboardAngle);
+                wristEnableStability(false);
+
                 //moveArmToAngle(-50,50);
 
                 stowed = false;
