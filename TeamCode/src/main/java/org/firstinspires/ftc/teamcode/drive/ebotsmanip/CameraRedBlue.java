@@ -74,9 +74,9 @@ public class CameraRedBlue {
         //elements are from your cameras’ perspective. The boxes are currently set at 20 x 20 pixels
         //which you can adjust below. Ideally the region of interest position should see the gray mat when
         //there is no element or the element color when the element is there.
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(20,98);
-        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(181,68);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(300,98);
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(00,98);
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(121,68);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(230,98);
         static final int REGION_WIDTH = 20;
         static final int REGION_HEIGHT = 20;
         Point region1_pointA = new Point(

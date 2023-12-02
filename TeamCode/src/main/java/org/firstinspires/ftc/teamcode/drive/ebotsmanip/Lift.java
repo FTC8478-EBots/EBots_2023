@@ -46,7 +46,7 @@ public class Lift {
     DcMotorEx wristMotor;
     int pixelLock = 0;
 
-    public static double STOWANGLE = 0;
+    public static int STOWANGLE = 19;
     //Servo wristServo;
     Telemetry telemetry;
     Servo handServo;
@@ -92,15 +92,21 @@ public class Lift {
         armMotor.setPower(.5);
         armMotor.setMotorEnable();
 
-        wristMotor.setMotorEnable();
+        //wristMotor.setMotorEnable();
+        wristMotor.setMotorDisable();
         wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wristMotor.setTargetPosition(0);
-        wristMotor.setPower(.5);
+        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //wristMotor.setMotorEnable();
+        wristMotor.setTargetPositionTolerance(0);
+        wristMotor.setPower(0);
         PIDFCoefficients wristPidfCoefficients = new PIDFCoefficients(wristMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+        wristPidfCoefficients.p = 20;
         wristPidfCoefficients.i =0;
         wristMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,wristPidfCoefficients);
-        //wristMotor.setPositionPIDFCoefficients();
+
+
+         wristMotor.setPositionPIDFCoefficients(40);
         wristMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
@@ -294,6 +300,8 @@ public class Lift {
     public void prepareToHang() {
 
         moveArmToAngle(-47,97,.4,.4);
+        wristEnableStability(false);
+        wristMotor.setTargetPosition(90);
         readyToHang=true;
 //        baseMotor.setTargetPosition((int) Math.round(BASEMOTORPREPAREHANGINGPOSITION));
 //        armMotor.setTargetPosition((int) Math.round(ARMMOTORPREPAREHANGINGPOSITION));
@@ -353,20 +361,19 @@ public class Lift {
 
                 wristEnableStability(false);
 
-                setWristAngle(STOWANGLE);
-                wristEnableStability(false);
+                wristMotor.setTargetPosition(STOWANGLE);
 
                 //Dec 1
-                moveArmToAngle(-70,0,.5,.4);
+                moveArmToAngle(-70,10,.5,.4);
                 //moveArmToAngle(-70,45,.5,.4);
                 try {
-                    sleep(500);
+                    sleep(100);
                 } catch (InterruptedException e) {
                     //throw new RuntimeException(e);
                 }
-                moveArmToAngle(0,0,.5,.4);
-                setwristFieldCentricAngle(0);
-                wristEnableStability(true);
+                wristMotor.setPower(0);
+                moveArmToAngle(-10,0,.5,.4);
+
 
 /*
 
@@ -399,6 +406,14 @@ public class Lift {
         new Thread(runnable).start();
     }
     public void pullArm(int row) {
+        if (readyToHang) {
+            readyToHang = false;
+            setRow(row);
+            setwristFieldCentricAngle(backboardAngle);
+            wristEnableStability(true);
+            return;
+
+        }
         if (!stowed) {
             prepareToHang();
             return;
@@ -415,13 +430,15 @@ public class Lift {
                 //Dec 1
                 moveArmToAngle(-70,10,.5,.4);
                 try {
-                    sleep(500);
+                    sleep(100);
                 } catch (InterruptedException e) {
 
                 }
+                wristMotor.setTargetPosition(STOWANGLE);
                 wristEnableStability(false);
+                wristMotor.setPower(1.0);
 
-           //     moveArmToAngle(-70,45,.5,.4);
+                moveArmToAngle(-70,45,.5,.4);
              //   wristEnableStability(true);
                // setwristFieldCentricAngle(backboardAngle);
 
@@ -437,13 +454,16 @@ public class Lift {
 
 
                 //moveArmToAngle(-50,30);
-                setwristFieldCentricAngle(backboardAngle);
-                wristEnableStability(false);
+                //setwristFieldCentricAngle(backboardAngle);
+                //wristEnableStability(false);
 
                 //moveArmToAngle(-50,50);
 
                 stowed = false;
                 setRow(row);
+                setwristFieldCentricAngle(backboardAngle);
+                wristEnableStability(true);
+
             }
         };
         new Thread(runnable).start();

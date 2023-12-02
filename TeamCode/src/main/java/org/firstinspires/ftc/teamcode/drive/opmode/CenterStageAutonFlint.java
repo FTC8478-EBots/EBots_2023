@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfigBackup;
+import org.firstinspires.ftc.teamcode.drive.ebotsmanip.AutonConfig;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.CameraRedBlue;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.DataStorage;
 import org.firstinspires.ftc.teamcode.drive.ebotsmanip.Intake;
@@ -26,9 +26,9 @@ import java.util.List;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(group = "drive")
+@Autonomous(group = "drive",preselectTeleOp = "TeleopTest2")
 public class CenterStageAutonFlint extends LinearOpMode {
-    AutonConfigBackup config;
+    AutonConfig config;
     SampleMecanumDrive drive;
     Intake intake;
     Telemetry telemetry;
@@ -50,7 +50,7 @@ public class CenterStageAutonFlint extends LinearOpMode {
 
     DataStorage.alreadyInitialized = true;
 
-    config = new AutonConfigBackup(telemetry, gamepad1);
+    config = new AutonConfig(telemetry, gamepad1);
 
 // Initiate Camera on Init.
         int cameraMonitorViewId =
@@ -86,14 +86,20 @@ public class CenterStageAutonFlint extends LinearOpMode {
 //Game Play Button is pressed
         if (opModeIsActive() && !isStopRequested()) {
 //Build trajectory based on last detected target by vision
-            config.generateAutonTrajectories(drive, intake,pixelArm);
+            List<Trajectory> trajectories = config.generateAutonTrajectories(drive, intake,pixelArm);
             drive.getLocalizer().setPoseEstimate(config.startPose);
             //buildParking();
 //run Autonomous trajectory
             //runAutoAndParking();
+
+            for (Trajectory traj : trajectories) {
+                drive.followTrajectory(traj);
+                sleep(500);
+            }
+            sleep(2000);
+            DataStorage.currentPose = drive.getPoseEstimate();
         }
-    sleep(500);
-    DataStorage.currentPose = drive.getPoseEstimate();
+
 
 }
 }

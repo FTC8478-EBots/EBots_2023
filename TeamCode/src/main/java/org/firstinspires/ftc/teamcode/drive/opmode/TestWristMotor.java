@@ -46,17 +46,22 @@ public class TestWristMotor extends LinearOpMode {
         Lift lift = new Lift(hardwareMap, null);
         lift.init(this);
         lift.wristEnableStability(true);
+        DcMotorEx wristMotor = hardwareMap.get(DcMotorEx.class,"wristMotor");
+
+       // wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wristMotor.setTargetPosition(0);
         //wristMotor.setMotorEnable();
-        //wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         waitForStart();
 
 
         while (!isStopRequested()) {
             //lift.setwristFieldCentricAngle(WRIST_ANGLE);
             //lift.stabilizeWrist();
-            lift.setWristAngle(WRIST_ANGLE);
+            //lift.setWristAngle(WRIST_ANGLE);
 
+            telemetry.addData("Wrist Position",wristMotor.getCurrentPosition());
             telemetry.addData("BaseArm Angle",lift.getLowerArmAngleDegrees());
             telemetry.addData("UpperArm Angle",lift.getUpperArmAngleDegrees());
             telemetry.update();
